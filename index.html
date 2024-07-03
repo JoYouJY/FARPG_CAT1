@@ -1,216 +1,183 @@
 
 <!DOCTYPE html>
 <html lang="en-us">
-  <head>
+<head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Fate-Adventure-BETAPVP1</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
-
-  </head>
-  <style>
-      /* Set the background color to red */
-      #unity-loading-bar {
+</head>
+<style>
+    /* Set the background color to red */
+    #unity-loading-bar {
         background-color: rgba(0, 0, 0, 0);
-      }
-      /* Set the background color of the canvas */
-      #unity-canvas {
+    }
+    /* Set the background color of the canvas */
+    #unity-canvas {
         background-color: rgba(0, 0, 0, 0.5);
-      }
-    </style>
-  <!--<body style="background-image: url('https://assets.zyrosite.com/mxBlyJk3v4f0qnxK/jojo-art-YX4XO87g1KtqLDE8.jpg');">--> 
-    <body style="background-color: #000000d9;"></body>
+    }
+</style>
+<!--<body style="background-image: url('https://assets.zyrosite.com/mxBlyJk3v4f0qnxK/jojo-art-YX4XO87g1KtqLDE8.jpg');">-->
+<body style="background-color: #000000d9;"></body>
 
-    <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.9.2/ethers.umd.js"></script>
-    <script type="text/javascript" src="./reroute.js"></script>  
-    <script type="text/javascript" src="./index.js"></script>  
-    <script>
-      function clearCache() {
+<script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.9.2/ethers.umd.js"></script>
+<script type="text/javascript" src="./reroute.js"></script>
+<script type="text/javascript" src="./index.js"></script>
+<script>
+    function clearCache() {
         o = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
         var t = {
-          name: "UnityCache",
-          version: 3
+            name: "UnityCache",
+            version: 3
         }
         o.deleteDatabase(t.name);
         location.reload();
         //alert("Cache cleared successfully!");
-      }
-    </script>
-    <div id="unity-container" class="unity-desktop">
-           
-      <canvas id="unity-canvas" width=1280 height=720 ></canvas>
-      <div id="unity-loading-bar">
+    }
+
+    function calculateCanvasSize() {
+        var aspectRatio = 1920 / 1080;
+        var windowWidth = window.innerWidth;
+        var windowHeight = window.innerHeight;
+        var newWidth, newHeight;
+
+        if (windowWidth / windowHeight > aspectRatio) {
+            // Fit to height
+            newHeight = windowHeight;
+            newWidth = newHeight * aspectRatio;
+        } else {
+            // Fit to width
+            newWidth = windowWidth;
+            newHeight = newWidth / aspectRatio;
+        }
+
+        return { width: newWidth, height: newHeight };
+    }
+
+    function resizeCanvas() {
+        var mainCanvas = document.getElementById('unity-canvas');
+        var size = calculateCanvasSize();
+        mainCanvas.style.width = size.width + 'px';
+        mainCanvas.style.height = size.height + 'px';
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    window.addEventListener('load', resizeCanvas);
+</script>
+<div id="unity-container" class="unity-desktop">
+    <canvas id="unity-canvas" width=1280 height=720></canvas>
+    <div id="unity-loading-bar">
         <div id="unity-logo"></div>
         <div id="unity-progress-bar-empty">
-          <div id="unity-progress-bar-full"></div>
+            <div id="unity-progress-bar-full"></div>
         </div>
-      </div>
-      <div id="unity-warning"></div>
-      <!--<div id="unity-footer">
-        <div id="unity-webgl-logo"></div>-->
-        <div id="unity-rotate-button"></div>
-        <div id="unity-build-title" style="color:beige">Rotate Screen</div>
-        <div style="font-family: 'Arial Black', sans-serif; font-size: 28px; color: #010b16; text-shadow: 2px 2px 4px #15669b;user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;">FATE ADVENTURE RPG - BETA - V1.0 </div>
-      </div>
     </div>
-    <script>
-      var chains = "fantom";
-      /*document.body.appendChild(Object.assign(document.createElement("script"), {
-        type: "text/javascript",
-        src: "./network.js"
-      }));*/
-      // #####################################################################################################################    
-      var initwidth = window.innerWidth;
-      //// var pixelRatio = window.devicePixelRatio || 1;
-      var mainDiv = document.getElementById('unity-container');
-      //  mainDiv.style.width = 1280 / pixelRatio + 'px';
-      // mainDiv.style.height = 720 / pixelRatio + 'px';
-      var pixelRatio = window.devicePixelRatio || 1;
-      var mainCanvas = document.getElementById('unity-canvas');
-      mainCanvas.style.width = 1 / pixelRatio + 'px';
-      mainCanvas.style.height = 1 / pixelRatio + 'px';
+    <div id="unity-warning"></div>
+    <!--<div id="unity-footer">
+        <div id="unity-webgl-logo"></div>-->
+    <div id="unity-rotate-button"></div>
+    <div id="unity-build-title" style="color:beige">Rotate Screen</div>
+    <div style="font-family: 'Arial Black', sans-serif; font-size: 28px; color: #010b16; text-shadow: 2px 2px 4px #15669b; user-select: none; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none;">FATE ADVENTURE RPG - BETA - V1.0</div>
+</div>
+<script>
+    var chains = "fantom";
+    var initwidth = window.innerWidth;
+    var pixelRatio = window.devicePixelRatio || 1;
+    var mainDiv = document.getElementById('unity-container');
+    var mainCanvas = document.getElementById('unity-canvas');
 
-      function resize() {
+    resizeCanvas();
+
+    function resize() {
         if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-          /*
-          mainCanvas.style.position = "absolute";
-          mainCanvas.style.top = "50%";
-          const posi = (window.innerWidth - 720/ pixelRatio)/1;
-          mainCanvas.style.left = posi+'px';
-          mainCanvas.style.transform = "translate(-50%, -50%)";
-          */
-          //   if (document.body.offsetWidth >= 1280 || true) {
-          //     document.getElementById("main").style.textAlign = "center";
-          //   } else {
-          document.getElementById("unity-container").style.textAlign = "center";
-
-          /*var fullscreenButton = document.getElementById("unity-fullscreen-button");
-          fullscreenButton.style.display = "none";*/
-
-          var buildTitle = document.getElementById("unity-build-title");
-          buildTitle.style.display = "none";
-
-          //    mainCanvas.style.position = "relative";
-          //    mainCanvas.style.left = Math.abs(((1280 - document.body.offsetWidth)/4)) + 'px';
-          //    mainCanvas.style.left = 70 + 'px';
-          //  }
-          const minCanvasWidth = 1280 / pixelRatio;
-          const maxCanvasWidth = 1280 / pixelRatio;
-          const minCanvasHeight = 720 / pixelRatio;
-          const maxCanvasHeight = 720 / pixelRatio;
-          // Get the width and height of the browser window
-          const windowWidth = window.innerWidth;
-          const windowHeight = window.innerHeight;
-          // Calculate the maximum allowed width and height based on the limits
-          const maxWidth = Math.min(maxCanvasWidth, Math.max(minCanvasWidth, windowWidth));
-          const maxHeight = Math.min(maxCanvasHeight, Math.max(minCanvasHeight, windowHeight));
-          // Calculate the aspect ratio of the canvas
-          const canvasAspectRatio = mainCanvas.width / mainCanvas.height;
-          // Calculate the new width and height of the canvas while maintaining the aspect ratio
-          let newCanvasWidth = maxWidth;
-          let newCanvasHeight = maxHeight / canvasAspectRatio;
-          if (newCanvasHeight > maxHeight) {
-            newCanvasHeight = maxHeight;
-            newCanvasWidth = newCanvasHeight * canvasAspectRatio;
-          }
-          // Set the new width and height of the canvas
-          //body.style.width = 1280/ pixelRatio+'px';
-          mainCanvas.style.width = 1280 / pixelRatio + 'px';
-          mainCanvas.style.height = 720 / pixelRatio + 'px';
-          document.querySelector('meta[name="viewport"]').setAttribute('content', 'width=' + 1280 / pixelRatio + 'px, initial-scale=' + 1);
-          document.body.style.zoom = (1280 / pixelRatio) / window.innerWidth * 100 + "%";
-          if (document.getElementById("unity-container").clientHeight < window.innerHeight) {
-            var Heightoffset = (window.innerHeight - document.getElementById("unity-container").clientHeight) / 2;
-          } else {
-            var Heightoffset = 0;
-          }
-          //const myDiv = document.getElementById('myDiv');
-          //      myDiv.textContent = window.innerWidth+"x"+window.innerHeight+"PR="+window.devicePixelRatio+" canvashight:"+ mainCanvas.style.height+
-          //      " DW:"+Heightoffset;
-          //myDiv.textContent = "openALPHA - expect bugs.";
-          //myDiv.style.height = Heightoffset + 'px';
-          //remove fullscreen mode for Mobile since the size will be wrong.
-          
+            document.getElementById("unity-container").style.textAlign = "center";
+            var buildTitle = document.getElementById("unity-build-title");
+            buildTitle.style.display = "none";
+            const minCanvasWidth = 1280 / pixelRatio;
+            const maxCanvasWidth = 1280 / pixelRatio;
+            const minCanvasHeight = 720 / pixelRatio;
+            const maxCanvasHeight = 720 / pixelRatio;
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+            const maxWidth = Math.min(maxCanvasWidth, Math.max(minCanvasWidth, windowWidth));
+            const maxHeight = Math.min(maxCanvasHeight, Math.max(minCanvasHeight, windowHeight));
+            const canvasAspectRatio = mainCanvas.width / mainCanvas.height;
+            let newCanvasWidth = maxWidth;
+            let newCanvasHeight = maxHeight / canvasAspectRatio;
+            if (newCanvasHeight > maxHeight) {
+                newCanvasHeight = maxHeight;
+                newCanvasWidth = newCanvasHeight * canvasAspectRatio;
+            }
+            mainCanvas.style.width = 1280 / pixelRatio + 'px';
+            mainCanvas.style.height = 720 / pixelRatio + 'px';
+            document.querySelector('meta[name="viewport"]').setAttribute('content', 'width=' + 1280 / pixelRatio + 'px, initial-scale=' + 1);
+            document.body.style.zoom = (1280 / pixelRatio) / window.innerWidth * 100 + "%";
+            if (document.getElementById("unity-container").clientHeight < window.innerHeight) {
+                var Heightoffset = (window.innerHeight - document.getElementById("unity-container").clientHeight) / 2;
+            } else {
+                var Heightoffset = 0;
+            }
         } else {
-var rotateButton = document.getElementById("unity-rotate-button");
-          rotateButton.style.display = "none";
-
-          var buildTitle = document.getElementById("unity-build-title");
-          buildTitle.style.display = "none";
-          mainDiv.style.textAlign = "center";
-          const minCanvasWidth = 1280 / pixelRatio;
-          const maxCanvasWidth = 1280 / pixelRatio;
-          const minCanvasHeight = 720 / pixelRatio;
-          const maxCanvasHeight = 720 / pixelRatio;
-          // Get the width and height of the browser window
-          const windowWidth = window.innerWidth;
-          const windowHeight = window.innerHeight;
-          // Calculate the maximum allowed width and height based on the limits
-          const maxWidth = Math.min(maxCanvasWidth, Math.max(minCanvasWidth, windowWidth));
-          const maxHeight = Math.min(maxCanvasHeight, Math.max(minCanvasHeight, windowHeight));
-          // Calculate the aspect ratio of the canvas
-          const canvasAspectRatio = mainCanvas.width / mainCanvas.height;
-          // Calculate the new width and height of the canvas while maintaining the aspect ratio
-          let newCanvasWidth = maxWidth;
-          let newCanvasHeight = maxHeight / canvasAspectRatio;
-          if (newCanvasHeight > maxHeight) {
-            newCanvasHeight = maxHeight;
-            newCanvasWidth = newCanvasHeight * canvasAspectRatio;
-          }
-          // Set the new width and height of the canvas
-          mainCanvas.style.width = maxWidth + 'px';
-          mainCanvas.style.height = maxHeight + 'px';
-          //const myDiv = document.getElementById('myDiv');
-          //myDiv.textContent = window.innerWidth+"x"+window.innerHeight+"PR="+window.devicePixelRatio;
-          
-          if (document.getElementById("unity-container").clientHeight < window.innerHeight) {
-            var Heightoffset = (window.innerHeight - document.getElementById("unity-container").clientHeight) / 2;
-          } else {
-            var Heightoffset = 0;
-          }
-          //      myDiv.textContent = window.innerWidth+"x"+window.innerHeight+"PR="+window.devicePixelRatio+" canvashight:"+ mainCanvas.style.height+
-          //      " DW:"+Heightoffset;
-          //myDiv.textContent = "openALPHA - expect bugs.";
-          //myDiv.style.height = Heightoffset + 'px';
+            var rotateButton = document.getElementById("unity-rotate-button");
+            rotateButton.style.display = "none";
+            var buildTitle = document.getElementById("unity-build-title");
+            buildTitle.style.display = "none";
+            mainDiv.style.textAlign = "center";
+            const minCanvasWidth = 1280 / pixelRatio;
+            const maxCanvasWidth = 1280 / pixelRatio;
+            const minCanvasHeight = 720 / pixelRatio;
+            const maxCanvasHeight = 720 / pixelRatio;
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+            const maxWidth = Math.min(maxCanvasWidth, Math.max(minCanvasWidth, windowWidth));
+            const maxHeight = Math.min(maxCanvasHeight, Math.max(minCanvasHeight, windowHeight));
+            const canvasAspectRatio = mainCanvas.width / mainCanvas.height;
+            let newCanvasWidth = maxWidth;
+            let newCanvasHeight = maxHeight / canvasAspectRatio;
+            if (newCanvasHeight > maxHeight) {
+                newCanvasHeight = maxHeight;
+                newCanvasWidth = newCanvasHeight * canvasAspectRatio;
+            }
+            mainCanvas.style.width = maxWidth + 'px';
+            mainCanvas.style.height = maxHeight + 'px';
+            if (document.getElementById("unity-container").clientHeight < window.innerHeight) {
+                var Heightoffset = (window.innerHeight - document.getElementById("unity-container").clientHeight) / 2;
+            } else {
+                var Heightoffset = 0;
+            }
         }
-      }
-      resize();
-      //###########################################################################################################################
-    </script>
-    <script>
-      var container = document.querySelector("#unity-container");
-      var canvas = document.querySelector("#unity-canvas");
-      var loadingBar = document.querySelector("#unity-loading-bar");
-      var progressBarFull = document.querySelector("#unity-progress-bar-full");
-      //var fullscreenButton = document.querySelector("#unity-fullscreen-button");
-      var warningBanner = document.querySelector("#unity-warning");
-      // Shows a temporary message banner/ribbon for a few seconds, or
-      // a permanent error message on top of the canvas if type=='error'.
-      // If type=='warning', a yellow highlight color is used.
-      // Modify or remove this function to customize the visually presented
-      // way that non-critical warnings and error messages are presented to the
-      // user.
-      function unityShowBanner(msg, type) {
+    }
+    resize();
+</script>
+<script>
+    var container = document.querySelector("#unity-container");
+    var canvas = document.querySelector("#unity-canvas");
+    var loadingBar = document.querySelector("#unity-loading-bar");
+    var progressBarFull = document.querySelector("#unity-progress-bar-full");
+    var warningBanner = document.querySelector("#unity-warning");
+
+    function unityShowBanner(msg, type) {
         function updateBannerVisibility() {
-          warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
+            warningBanner.style.display = warningBanner.children.length ? 'block' : 'none';
         }
         var div = document.createElement('div');
         div.innerHTML = msg;
         warningBanner.appendChild(div);
         if (type == 'error') div.style = 'background: red; padding: 10px;';
         else {
-          if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
-          setTimeout(function() {
-            warningBanner.removeChild(div);
-            updateBannerVisibility();
-          }, 5000);
+            if (type == 'warning') div.style = 'background: yellow; padding: 10px;';
+            setTimeout(function() {
+                warningBanner.removeChild(div);
+                updateBannerVisibility();
+            }, 5000);
         }
         updateBannerVisibility();
-      }
-      var buildUrl = "Build";
-      var loaderUrl = buildUrl + "/Build.loader.js";
-      var config = {
+    }
+
+    var buildUrl = "Build";
+    var loaderUrl = buildUrl + "/Build.loader.js";
+    var config = {
         dataUrl: buildUrl + "/Build.data",
         frameworkUrl: buildUrl + "/Build.framework.js",
         codeUrl: buildUrl + "/Build.wasm",
@@ -219,7 +186,7 @@ var rotateButton = document.getElementById("unity-rotate-button");
         productName: "FateAdventureRPG",
         productVersion: "1.0.0",
         showBanner: unityShowBanner,
-      };
+    };
       // By default Unity keeps WebGL canvas render target size matched with
       // the DOM size of the canvas element (scaled by window.devicePixelRatio)
       // Set this to false if you want to decouple this synchronization from
