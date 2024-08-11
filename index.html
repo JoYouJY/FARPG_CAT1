@@ -4,10 +4,21 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Fate-Adventure-BETAPVP1</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
 </head>
+
+<iframe width="560" height="315" 
+    src="https://www.youtube.com/embed/mBA4aNflI3w?autoplay=1&mute=1&loop=1&playlist=mBA4aNflI3w" 
+    frameborder="0" 
+    allow="autoplay">
+</iframe>
+
+
+
+
 <style>
     /* Set the background color to red */
     #unity-loading-bar {
@@ -19,7 +30,11 @@
     }
 </style>
 <!--<body style="background-image: url('https://assets.zyrosite.com/mxBlyJk3v4f0qnxK/jojo-art-YX4XO87g1KtqLDE8.jpg');">-->
-<body style="background-color: #000000d9;"></body>
+<body style="background-color: #000000d9;">
+
+    <button id="install-button" style="display: block;">Install App</button>
+
+</body>
 
 <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.9.2/ethers.umd.js"></script>
 <script type="text/javascript" src="./reroute.js"></script>
@@ -87,10 +102,23 @@
     var mainDiv = document.getElementById('unity-container');
     var mainCanvas = document.getElementById('unity-canvas');
 
-    resizeCanvas();
+    //resizeCanvas();
 
     function resize() {
         if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+            //register serviceworker for installing cache.
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('/service-worker.js')
+                    .then((registration) => {
+                        console.log('Service Worker registered with scope:', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.log('Service Worker registration failed:', error);
+                    });
+                });
+            }
+            //------Register Cache installation end---------
             document.getElementById("unity-container").style.textAlign = "center";
             var buildTitle = document.getElementById("unity-build-title");
             buildTitle.style.display = "none";
