@@ -108,7 +108,7 @@
     function resize() {
         if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
             //register serviceworker for installing cache.
-            if ('serviceWorker' in navigator) {
+           /* if ('serviceWorker' in navigator) {
                 window.addEventListener('load', () => {
                     navigator.serviceWorker.register('/service-worker.js')
                     .then((registration) => {
@@ -118,8 +118,47 @@
                         console.log('Service Worker registration failed:', error);
                     });
                 });
+            }*/
+            function checkInstallSupport() {
+                return 'serviceWorker' in navigator && 'register' in navigator;
+                }
+
+                function installPWA() {
+                if (checkInstallSupport()) {
+                    // Register a service worker
+                    navigator.serviceWorker.register('service-worker.js')
+                    .then(() => {
+                        // Successfully registered
+                        deferredPrompt = null; // Assuming you have a deferredPrompt variable
+                        return navigator.serviceWorker.ready;
+                    })
+                    .then(serviceWorkerRegistration => {
+                        // Show the install prompt
+                        serviceWorkerRegistration.unregister(); // Unregister after showing prompt
+                        return deferredPrompt.prompt();
+                    })
+                    .then(result => {
+                        if (result.outcome === 'accepted') {
+                        console.log('User accepted the A2HS prompt');
+                        } else {
+                        console.log('User dismissed the A2HS prompt');
+                        }
+                        deferredPrompt = null;
+                    });
+                } else {
+                    // Handle unsupported browsers
+                    console.error('Install support not available');
+                }
             }
+
+
+            // Assuming you have a button with id "install-button"
+            const installBtn = document.getElementById('install-button');
+            installBtn.addEventListener('click', installPWA);
+
+
             //------Register Cache installation end---------
+            /////////////////////////////////////////////////////////////////////////////////////////
             document.getElementById("unity-container").style.textAlign = "center";
             var buildTitle = document.getElementById("unity-build-title");
             buildTitle.style.display = "none";
